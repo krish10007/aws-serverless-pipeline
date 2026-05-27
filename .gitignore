@@ -1,0 +1,67 @@
+# ============================================================
+# TERRAFORM
+# ============================================================
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform.lock.hcl
+terraform.tfvars          # may contain secrets
+*.auto.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+
+# ============================================================
+# PYTHON
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# ============================================================
+# AWS / CREDENTIALS — never commit these
+# ============================================================
+.env
+.env.*
+*.pem
+*.key
+credentials
+aws-credentials.json
+
+# ============================================================
+# LAMBDA DEPLOYMENT PACKAGES
+# ============================================================
+*.zip
+layer/
+
+# ============================================================
+# IDE / OS
+# ============================================================
+.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================================
+# LOCAL TESTING
+# ============================================================
+docker-compose.override.yml
+localstack-data/
