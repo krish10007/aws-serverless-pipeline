@@ -1,3 +1,4 @@
-# Outputs will be added as each component is built
-# They let you see key resource values after apply
-# e.g. S3 bucket name, Lambda ARNs, DynamoDB table name
+output "data_bucket_name" {
+  description = "Upload CSV/JSON files here to trigger the pipeline"
+  value       = module.s3.bucket_name
+}
