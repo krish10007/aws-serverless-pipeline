@@ -12,3 +12,8 @@ output "processor_lambda_role_arn" {
   description = "IAM role ARN — exported for reference"
   value       = aws_iam_role.processor_lambda_role.arn
 }
+
+output "writer_lambda_name" {
+  description = "Writer Lambda name — for CloudWatch alarms"
+  value       = aws_lambda_function.writer.function_name
+}

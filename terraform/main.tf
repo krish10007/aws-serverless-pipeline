@@ -3,6 +3,12 @@
 # Calls each module and wires outputs between them
 # -------------------------------------------------------
 
+module "dynamodb" {
+  source = "./modules/dynamodb"
+
+  project_name = var.project_name
+  environment  = var.environment
+}
 
 module "sqs" {
   source = "./modules/sqs"
@@ -14,11 +20,13 @@ module "sqs" {
 module "lambda" {
   source = "./modules/lambda"
 
-  project_name    = var.project_name
-  environment     = var.environment
-  sqs_queue_url   = module.sqs.queue_url
-  sqs_queue_arn   = module.sqs.queue_arn
-  data_bucket_arn = module.s3.bucket_arn
+  project_name        = var.project_name
+  environment         = var.environment
+  sqs_queue_url       = module.sqs.queue_url
+  sqs_queue_arn       = module.sqs.queue_arn
+  data_bucket_arn     = module.s3.bucket_arn
+  dynamodb_table_name = module.dynamodb.table_name
+  dynamodb_table_arn  = module.dynamodb.table_arn
 }
 
 module "s3" {

@@ -20,3 +20,13 @@ variable "data_bucket_arn" {
   description = "ARN of the S3 data bucket — needed for IAM read permissions"
   type        = string
 }
+
+variable "dynamodb_table_name" {
+  description = "DynamoDB table name — passed to writer Lambda as env var"
+  type        = string
+}
+
+variable "dynamodb_table_arn" {
+  description = "DynamoDB table ARN — needed for IAM permissions"
+  type        = string
+}

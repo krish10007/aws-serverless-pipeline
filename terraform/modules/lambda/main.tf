@@ -127,3 +127,123 @@ resource "aws_cloudwatch_log_group" "processor" {
   name              = "/aws/lambda/${var.project_name}-processor-${var.environment}"
   retention_in_days = 30  # don't keep logs forever — costs money
 }
+
+# -------------------------------------------------------
+# IAM ROLE — Writer Lambda identity
+# -------------------------------------------------------
+resource "aws_iam_role" "writer_lambda_role" {
+  name = "${var.project_name}-writer-role-${var.environment}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "writer_basic_execution" {
+  role       = aws_iam_role.writer_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy" "writer_lambda_policy" {
+  name = "${var.project_name}-writer-policy-${var.environment}"
+  role = aws_iam_role.writer_lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        # Read AND delete messages from SQS
+        # Delete is required — Lambda must remove messages after processing
+        Sid    = "ConsumeFromSQS"
+        Effect = "Allow"
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:ChangeMessageVisibility"
+        ]
+        Resource = var.sqs_queue_arn
+      },
+      {
+        # Write records to DynamoDB
+        Sid    = "WriteToDynamoDB"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem"
+        ]
+        Resource = var.dynamodb_table_arn
+      },
+      {
+        Sid      = "PushCloudWatchMetrics"
+        Effect   = "Allow"
+        Action   = ["cloudwatch:PutMetricData"]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# -------------------------------------------------------
+# PACKAGE + DEPLOY WRITER LAMBDA
+# -------------------------------------------------------
+data "archive_file" "writer_lambda" {
+  type        = "zip"
+  source_dir  = "${path.root}/../src/writer"
+  output_path = "${path.root}/../src/writer/writer_lambda.zip"
+}
+
+resource "aws_lambda_function" "writer" {
+  function_name = "${var.project_name}-writer-${var.environment}"
+  description   = "Reads from SQS, writes records to DynamoDB"
+
+  filename         = data.archive_file.writer_lambda.output_path
+  source_code_hash = data.archive_file.writer_lambda.output_base64sha256
+
+  runtime     = "python3.11"
+  handler     = "handler.handler"
+  role        = aws_iam_role.writer_lambda_role.arn
+  memory_size = 256
+  timeout     = 300
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE_NAME = var.dynamodb_table_name
+      ENVIRONMENT         = var.environment
+      PROJECT_NAME        = var.project_name
+    }
+  }
+
+  logging_config {
+    log_format = "JSON"
+    log_group  = aws_cloudwatch_log_group.writer.name
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.writer_basic_execution,
+    aws_cloudwatch_log_group.writer,
+  ]
+}
+
+# SQS → Lambda #2 trigger
+# This is what makes SQS automatically invoke the writer
+resource "aws_lambda_event_source_mapping" "sqs_to_writer" {
+  event_source_arn                   = var.sqs_queue_arn
+  function_name                      = aws_lambda_function.writer.arn
+  batch_size                         = 10   # process up to 10 records at once
+  #maximum_batching_window_in_seconds = 5    # wait up to 5s to fill a batch
+
+  # Enables partial batch failure reporting
+  # Matches what handler.py returns in batchItemFailures
+  function_response_types = ["ReportBatchItemFailures"]
+}
+
+resource "aws_cloudwatch_log_group" "writer" {
+  name              = "/aws/lambda/${var.project_name}-writer-${var.environment}"
+  retention_in_days = 30
+}

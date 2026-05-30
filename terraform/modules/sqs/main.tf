@@ -72,3 +72,4 @@ resource "aws_cloudwatch_metric_alarm" "dlq_depth" {
   # SNS topic ARN will be added when monitoring module is built
   # alarm_actions = [var.sns_topic_arn]
 }
+
