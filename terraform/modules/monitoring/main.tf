@@ -253,11 +253,11 @@ resource "aws_cloudwatch_dashboard" "pipeline" {
         width  = 8
         height = 6
         properties = {
-          region  = var.aws_region
-          title   = "Invocation Latency p99 (ms)"
-          view    = "timeSeries"
-          period  = 60
-          stat    = "p99"
+          region = var.aws_region
+          title  = "Invocation Latency p99 (ms)"
+          view   = "timeSeries"
+          period = 60
+          stat   = "p99"
           metrics = [
             ["${var.project_name}/Processor", "TotalLatency", "Environment", var.environment, { "label" : "Processor" }],
             ["${var.project_name}/Writer", "InvocationLatency", "Environment", var.environment, { "label" : "Writer" }]
@@ -289,11 +289,11 @@ resource "aws_cloudwatch_dashboard" "pipeline" {
         width  = 8
         height = 6
         properties = {
-          region  = var.aws_region
-          title   = "Lambda Error Rates"
-          view    = "timeSeries"
-          period  = 60
-          stat    = "Sum"
+          region = var.aws_region
+          title  = "Lambda Error Rates"
+          view   = "timeSeries"
+          period = 60
+          stat   = "Sum"
           metrics = [
             ["AWS/Lambda", "Errors", "FunctionName", var.processor_lambda_name, { "label" : "Processor Errors" }],
             ["AWS/Lambda", "Errors", "FunctionName", var.writer_lambda_name, { "label" : "Writer Errors" }]
@@ -322,11 +322,11 @@ resource "aws_cloudwatch_dashboard" "pipeline" {
         width  = 12
         height = 6
         properties = {
-          region  = var.aws_region
-          title   = "Lambda Duration (ms)"
-          view    = "timeSeries"
-          period  = 60
-          stat    = "Average"
+          region = var.aws_region
+          title  = "Lambda Duration (ms)"
+          view   = "timeSeries"
+          period = 60
+          stat   = "Average"
           metrics = [
             ["AWS/Lambda", "Duration", "FunctionName", var.processor_lambda_name, { "label" : "Processor" }],
             ["AWS/Lambda", "Duration", "FunctionName", var.writer_lambda_name, { "label" : "Writer" }]

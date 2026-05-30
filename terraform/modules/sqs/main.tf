@@ -10,7 +10,7 @@ resource "aws_sqs_queue" "dlq" {
 
   # How long failed messages stay in DLQ before expiring
   # 14 days gives you time to investigate and replay
-  message_retention_seconds = 1209600  # 14 days
+  message_retention_seconds = 1209600 # 14 days
 
   tags = {
     Name = "${var.project_name}-dlq"
@@ -32,15 +32,15 @@ resource "aws_sqs_queue" "main" {
   # How long a message is hidden after Lambda #2 picks it up
   # If Lambda #2 doesn't delete it within this window, SQS retries
   # Set this higher than your Lambda #2 timeout
-  visibility_timeout_seconds = 300  # matches Lambda timeout
+  visibility_timeout_seconds = 300 # matches Lambda timeout
 
   # How long messages stay in queue if never processed
-  message_retention_seconds = 86400  # 1 day
+  message_retention_seconds = 86400 # 1 day
 
   # Redrive policy — after 3 failed attempts, send to DLQ
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn
-    maxReceiveCount     = 3  # try 3 times before giving up
+    maxReceiveCount     = 3 # try 3 times before giving up
   })
 
   tags = {
@@ -60,9 +60,9 @@ resource "aws_cloudwatch_metric_alarm" "dlq_depth" {
   evaluation_periods  = 1
   metric_name         = "ApproximateNumberOfMessagesVisible"
   namespace           = "AWS/SQS"
-  period              = 60   # check every 60 seconds
+  period              = 60 # check every 60 seconds
   statistic           = "Sum"
-  threshold           = 0    # alarm if even 1 message is in DLQ
+  threshold           = 0 # alarm if even 1 message is in DLQ
   treat_missing_data  = "notBreaching"
 
   dimensions = {

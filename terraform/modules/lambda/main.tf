@@ -58,10 +58,10 @@ resource "aws_iam_role_policy" "processor_lambda_policy" {
       },
       {
         # Push custom metrics to CloudWatch
-        Sid    = "PushCloudWatchMetrics"
-        Effect = "Allow"
-        Action = ["cloudwatch:PutMetricData"]
-        Resource = "*"  # CloudWatch metrics don't support resource-level restrictions
+        Sid      = "PushCloudWatchMetrics"
+        Effect   = "Allow"
+        Action   = ["cloudwatch:PutMetricData"]
+        Resource = "*" # CloudWatch metrics don't support resource-level restrictions
       }
     ]
   })
@@ -89,13 +89,13 @@ resource "aws_lambda_function" "processor" {
   source_code_hash = data.archive_file.processor_lambda.output_base64sha256
 
   runtime = "python3.11"
-  handler = "handler.handler"  # filename.function_name
+  handler = "handler.handler" # filename.function_name
 
   role = aws_iam_role.processor_lambda_role.arn
 
   # Memory and timeout — tune these after load testing
-  memory_size = 256   # MB
-  timeout     = 300   # seconds (5 min max for large files)
+  memory_size = 256 # MB
+  timeout     = 300 # seconds (5 min max for large files)
 
   # Environment variables — your Python code reads these with os.environ
   environment {
@@ -108,7 +108,7 @@ resource "aws_lambda_function" "processor" {
 
   # Structured logging config
   logging_config {
-    log_format = "JSON"  # tells Lambda runtime to treat logs as JSON
+    log_format = "JSON" # tells Lambda runtime to treat logs as JSON
     log_group  = aws_cloudwatch_log_group.processor.name
   }
 
@@ -125,7 +125,7 @@ resource "aws_lambda_function" "processor" {
 # -------------------------------------------------------
 resource "aws_cloudwatch_log_group" "processor" {
   name              = "/aws/lambda/${var.project_name}-processor-${var.environment}"
-  retention_in_days = 30  # don't keep logs forever — costs money
+  retention_in_days = 30 # don't keep logs forever — costs money
 }
 
 # -------------------------------------------------------
@@ -233,9 +233,9 @@ resource "aws_lambda_function" "writer" {
 # SQS → Lambda #2 trigger
 # This is what makes SQS automatically invoke the writer
 resource "aws_lambda_event_source_mapping" "sqs_to_writer" {
-  event_source_arn                   = var.sqs_queue_arn
-  function_name                      = aws_lambda_function.writer.arn
-  batch_size                         = 10   # process up to 10 records at once
+  event_source_arn = var.sqs_queue_arn
+  function_name    = aws_lambda_function.writer.arn
+  batch_size       = 10 # process up to 10 records at once
   #maximum_batching_window_in_seconds = 5    # wait up to 5s to fill a batch
 
   # Enables partial batch failure reporting

@@ -53,7 +53,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_bucket" {
     status = "Enabled"
 
     filter {
-      prefix = ""  # applies to all objects
+      prefix = "" # applies to all objects
     }
 
     # After 90 days move to Infrequent Access (cheaper, same durability)
@@ -93,7 +93,7 @@ resource "aws_s3_bucket_notification" "data_bucket" {
 
   lambda_function {
     lambda_function_arn = var.processor_lambda_arn
-    events              = ["s3:ObjectCreated:*"]  # fires on any upload
+    events              = ["s3:ObjectCreated:*"] # fires on any upload
 
     # Only trigger for CSV files in the raw/ prefix
     filter_prefix = "raw/"
