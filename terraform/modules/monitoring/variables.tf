@@ -25,3 +25,12 @@ variable "writer_lambda_name" {
   description = "Writer Lambda name — for error rate alarm"
   type        = string
 }
+
+variable "aws_region" {
+  type = string
+}
+
+variable "dynamodb_table_name" {
+  type        = string
+  description = "DynamoDB table name for dashboard widgets"
+}

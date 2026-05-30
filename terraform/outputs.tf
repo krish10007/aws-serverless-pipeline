@@ -8,3 +8,8 @@ output "dynamodb_table_name" {
   description = "DynamoDB table where processed records land"
   value       = module.dynamodb.table_name
 }
+
+output "dashboard_url" {
+  description = "CloudWatch dashboard URL"
+  value       = module.monitoring.dashboard_url
+}
