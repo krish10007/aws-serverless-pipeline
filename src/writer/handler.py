@@ -11,7 +11,6 @@ import time
 import logging
 import boto3
 from datetime import datetime, timezone, timedelta
-from boto3.dynamodb.conditions import Key
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -131,7 +130,6 @@ def handler(event, context):
 
     for sqs_message in event.get("Records", []):
         message_id    = sqs_message["messageId"]
-        receipt_handle = sqs_message["receiptHandle"]
         write_start   = time.perf_counter()
 
         try:

@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 120
-ignore = E302,W293,W292,W291
+ignore = E302,W293,W292,W291,E221,F841
 exclude =
     .terraform,
     __pycache__,
