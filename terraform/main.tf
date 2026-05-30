@@ -37,3 +37,14 @@ module "s3" {
   aws_region           = var.aws_region
   processor_lambda_arn = module.lambda.processor_lambda_arn
 }
+
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  project_name          = var.project_name
+  environment           = var.environment
+  alert_email           = var.alert_email
+  dlq_alarm_name        = module.sqs.dlq_alarm_name
+  processor_lambda_name = module.lambda.processor_lambda_name
+  writer_lambda_name    = module.lambda.writer_lambda_name
+}
