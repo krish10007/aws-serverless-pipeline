@@ -112,12 +112,3 @@ resource "aws_s3_bucket_notification" "data_bucket" {
   # Lambda must exist before S3 can set up the notification
   depends_on = [aws_lambda_permission.allow_s3_invoke]
 }
-
-resource "aws_s3_bucket" "data_bucket" {
-  bucket        = "${var.project_name}-data-${var.environment}-${data.aws_caller_identity.current.account_id}"
-  force_destroy = true    # add this line
-
-  tags = {
-    Name = "${var.project_name}-data-bucket"
-  }
-}
