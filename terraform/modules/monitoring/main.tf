@@ -141,6 +141,8 @@ resource "aws_cloudwatch_log_metric_filter" "processor_errors" {
     value     = "1"
     unit      = "Count"
   }
+
+  depends_on = [var.processor_log_group_name]
 }
 
 resource "aws_cloudwatch_log_metric_filter" "writer_errors" {
@@ -154,6 +156,8 @@ resource "aws_cloudwatch_log_metric_filter" "writer_errors" {
     value     = "1"
     unit      = "Count"
   }
+
+  depends_on = [var.writer_log_group_name]
 }
 
 resource "aws_cloudwatch_dashboard" "pipeline" {

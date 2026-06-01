@@ -46,7 +46,9 @@ module "monitoring" {
   alert_email           = var.alert_email
   aws_region            = var.aws_region
   dlq_alarm_name        = module.sqs.dlq_alarm_name
-  processor_lambda_name = module.lambda.processor_lambda_name
-  writer_lambda_name    = module.lambda.writer_lambda_name
-  dynamodb_table_name   = module.dynamodb.table_name
+  processor_lambda_name    = module.lambda.processor_lambda_name
+  writer_lambda_name       = module.lambda.writer_lambda_name
+  dynamodb_table_name      = module.dynamodb.table_name
+  processor_log_group_name = module.lambda.processor_log_group_name
+  writer_log_group_name    = module.lambda.writer_log_group_name
 }

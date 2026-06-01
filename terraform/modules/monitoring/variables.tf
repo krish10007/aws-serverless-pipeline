@@ -34,3 +34,13 @@ variable "dynamodb_table_name" {
   type        = string
   description = "DynamoDB table name for dashboard widgets"
 }
+
+variable "processor_log_group_name" {
+  description = "Processor Lambda log group — ensures it exists before metric filter"
+  type        = string
+}
+
+variable "writer_log_group_name" {
+  description = "Writer Lambda log group — ensures it exists before metric filter"
+  type        = string
+}

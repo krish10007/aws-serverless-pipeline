@@ -17,3 +17,11 @@ output "writer_lambda_name" {
   description = "Writer Lambda name — for CloudWatch alarms"
   value       = aws_lambda_function.writer.function_name
 }
+
+output "processor_log_group_name" {
+  value = aws_cloudwatch_log_group.processor.name
+}
+
+output "writer_log_group_name" {
+  value = aws_cloudwatch_log_group.writer.name
+}
